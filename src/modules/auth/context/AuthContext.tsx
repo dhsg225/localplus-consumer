@@ -1,8 +1,8 @@
 // [2024-12-19 23:15] - Updated to use unified authentication system exclusively
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { User, AuthState, AuthContextType, LoginCredentials, RegisterCredentials, UserPreferences } from '../types';
-import { authService } from '@shared/services/authService';
-import type { UnifiedUser } from '@shared/services/authService';
+import { authService } from '../../../services/authService';
+import type { UnifiedUser } from '../../../services/authService';
 
 // Action types
 type AuthAction =

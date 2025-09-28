@@ -22,8 +22,6 @@ import PassportPage from "./modules/passport/components/PassportPage";
 import SubscriptionUpgrade from "./modules/passport/components/SubscriptionUpgrade";
 import DiscountPassportInfo from "./modules/passport/components/DiscountPassportInfo";
 // Admin components
-import AdminDashboard from "./modules/admin/components/AdminDashboard";
-import NewsAdminSettings from "./modules/admin/components/NewsAdminSettings";
 // [2024-05-10 17:30 UTC] - Advertising Management
 import AdManagementDashboard from "./modules/advertising/components/AdManagementDashboard";
 import AdShowcase from "./modules/advertising/components/AdShowcase";
@@ -74,8 +72,6 @@ function App() {
               <Route path="/usersettings" element={<UserSettingsPage />}/>
               
               {/* Admin Routes */}
-              <Route path="/admin" element={<AdminDashboard />}/>
-              <Route path="/admin/news-settings" element={<NewsAdminSettings />}/>
               
               {/* [2024-05-10 17:30 UTC] - Advertising Management Route */}
               <Route path="/admin/advertising" element={<AdManagementDashboard />}/>
