@@ -14,9 +14,125 @@ import { Home, Search, MessageCircle, CreditCard, User, MapPin, Clock, Star, Cal
 // Mobile-first PWA Home Screen
 const MobileHomeScreen: React.FC = () => {
   const { authState } = useAuth();
+  const [currentLocation, setCurrentLocation] = useState('Bangkok');
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+
+  // Real location detection implementation
+  const detectUserLocation = async () => {
+    setIsDetectingLocation(true);
+    try {
+      // PRIORITY 1: Check if user manually selected location
+      const storedLocation = getStoredLocation();
+      if (storedLocation) {
+        console.log('Using stored location:', storedLocation);
+        setCurrentLocation(storedLocation);
+        setIsDetectingLocation(false);
+        return;
+      }
+
+      // PRIORITY 2: Try GPS detection
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            const detectedCity = await getLocationFromCoordinates(latitude, longitude);
+            setCurrentLocation(detectedCity);
+            setIsDetectingLocation(false);
+          },
+          async () => {
+            // PRIORITY 3: IP geolocation fallback
+            const detectedCity = await getLocationFromIP();
+            setCurrentLocation(detectedCity);
+            setIsDetectingLocation(false);
+          }
+        );
+      } else {
+        // PRIORITY 4: Final fallback
+        const detectedCity = await getLocationFromIP();
+        setCurrentLocation(detectedCity);
+        setIsDetectingLocation(false);
+      }
+    } catch (error) {
+      console.error('Location detection failed:', error);
+      setCurrentLocation('Bangkok'); // Ultimate fallback
+      setIsDetectingLocation(false);
+    }
+  };
+
+  // Location detection functions from original codebase
+  const getStoredLocation = (): string | null => {
+    try {
+      const stored = localStorage.getItem('localplus-current-location');
+      return stored ? JSON.parse(stored).city : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const getLocationFromCoordinates = async (lat: number, lng: number): Promise<string> => {
+    const locations = [
+      { name: 'Bangkok', lat: 13.7563, lng: 100.5018, radius: 0.5 },
+      { name: 'Pattaya', lat: 12.9329, lng: 100.8825, radius: 0.3 },
+      { name: 'Hua Hin', lat: 12.5684, lng: 99.9578, radius: 0.3 },
+      { name: 'Phuket', lat: 7.8804, lng: 98.3923, radius: 0.3 },
+      { name: 'Chiang Mai', lat: 18.7883, lng: 98.9853, radius: 0.3 }
+    ];
+    
+    for (const location of locations) {
+      if (Math.abs(lat - location.lat) < location.radius && Math.abs(lng - location.lng) < location.radius) {
+        return location.name;
+      }
+    }
+    
+    return 'Bangkok';
+  };
+
+  const getLocationFromIP = async (): Promise<string> => {
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      
+      const detectedCity = (data.city || '').toLowerCase();
+      const detectedRegion = (data.region || '').toLowerCase();
+      
+      // Check for Hua Hin and surrounding areas
+      const huaHinKeywords = ['hua hin', 'hin lek fai', 'nong khon', 'prachuap'];
+      if (huaHinKeywords.some(keyword => 
+        detectedCity.includes(keyword) || detectedRegion.includes(keyword)
+      )) {
+        return 'Hua Hin';
+      }
+      
+      // Check for Pattaya area
+      const pattayaKeywords = ['pattaya', 'chonburi', 'banglamung'];
+      if (pattayaKeywords.some(keyword => 
+        detectedCity.includes(keyword) || detectedRegion.includes(keyword)
+      )) {
+        return 'Pattaya';
+      }
+      
+      // Check for other supported cities
+      const supportedCities = ['Phuket', 'Chiang Mai'];
+      for (const city of supportedCities) {
+        if (detectedCity.includes(city.toLowerCase())) {
+          return city;
+        }
+      }
+      
+      return 'Bangkok';
+    } catch (error) {
+      console.error('IP geolocation failed:', error);
+      return 'Bangkok';
+    }
+  };
+
+  // Detect location on component mount
+  React.useEffect(() => {
+    detectUserLocation();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto">
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative">
       {/* Header Section */}
       <div className="bg-white px-4 pt-4 pb-2">
         <div className="text-center">
@@ -27,13 +143,15 @@ const MobileHomeScreen: React.FC = () => {
           <div className="flex items-center justify-center mb-2">
             <div className="flex items-center bg-gray-100 rounded-full px-3 py-1">
               <MapPin className="w-4 h-4 text-red-500 mr-1" />
-              <span className="text-sm font-medium">Bangkok</span>
+              <span className="text-sm font-medium">
+                {isDetectingLocation ? 'Detecting...' : currentLocation}
+              </span>
               <span className="text-xs text-gray-500 ml-1">▼</span>
             </div>
           </div>
           <p className="text-xs text-gray-500 flex items-center justify-center">
             <MapPin className="w-3 h-3 text-red-500 mr-1" />
-            Auto-detected: Bangkok
+            {isDetectingLocation ? 'Detecting location...' : `Auto-detected: ${currentLocation}`}
           </p>
         </div>
       </div>
@@ -170,7 +288,7 @@ const MobileHomeScreen: React.FC = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 max-w-md mx-auto">
         <div className="flex items-center justify-around py-2">
           <Link to="/" className="flex flex-col items-center py-2 px-3 text-red-600">
             <Home className="w-5 h-5" />
@@ -232,7 +350,7 @@ const AuthPages: React.FC = () => {
 // Main app content with auth integration
 const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto">
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative">
       <Routes>
         <Route path="/" element={<MobileHomeScreen />}/>
         <Route path="/restaurants" element={<RestaurantsPage />}/>
