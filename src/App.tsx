@@ -16,6 +16,18 @@ const MobileHomeScreen: React.FC = () => {
   const { authState } = useAuth();
   const [currentLocation, setCurrentLocation] = useState('Bangkok');
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+
+  // Available cities from original codebase
+  const availableCities = [
+    { id: 'bangkok', name: 'Bangkok', slug: 'bangkok' },
+    { id: 'pattaya', name: 'Pattaya', slug: 'pattaya' },
+    { id: 'hua-hin', name: 'Hua Hin', slug: 'hua-hin' },
+    { id: 'phuket', name: 'Phuket', slug: 'phuket' },
+    { id: 'chiang-mai', name: 'Chiang Mai', slug: 'chiang-mai' },
+    { id: 'krabi', name: 'Krabi', slug: 'krabi' },
+    { id: 'samui', name: 'Koh Samui', slug: 'samui' }
+  ];
 
   // Real location detection implementation
   const detectUserLocation = async () => {
@@ -126,28 +138,67 @@ const MobileHomeScreen: React.FC = () => {
     }
   };
 
+  // Manual location selection
+  const handleLocationSelect = (cityName: string) => {
+    setCurrentLocation(cityName);
+    setShowLocationDropdown(false);
+    
+    // Store selected location in localStorage
+    const locationData = {
+      city: cityName,
+      selected: true,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('localplus-current-location', JSON.stringify(locationData));
+    
+    console.log('📍 Manual location selected:', cityName);
+  };
+
   // Detect location on component mount
   React.useEffect(() => {
     detectUserLocation();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative">
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative overflow-y-auto">
       {/* Header Section */}
       <div className="bg-white px-4 pt-4 pb-2">
-        <div className="text-center">
+            <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome to LocalPlus</h1>
           <p className="text-sm text-gray-600 mb-3">Your lifestyle companion for Thailand</p>
           
           {/* Location Selector */}
-          <div className="flex items-center justify-center mb-2">
-            <div className="flex items-center bg-gray-100 rounded-full px-3 py-1">
+          <div className="flex items-center justify-center mb-2 relative">
+            <div 
+              className="flex items-center bg-gray-100 rounded-full px-3 py-1 cursor-pointer hover:bg-gray-200 transition-colors"
+              onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+            >
               <MapPin className="w-4 h-4 text-red-500 mr-1" />
               <span className="text-sm font-medium">
                 {isDetectingLocation ? 'Detecting...' : currentLocation}
               </span>
               <span className="text-xs text-gray-500 ml-1">▼</span>
             </div>
+            
+            {/* Location Dropdown */}
+            {showLocationDropdown && (
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-48">
+                <div className="py-2">
+                  {availableCities.map((city) => (
+                    <button
+                      key={city.id}
+                      onClick={() => handleLocationSelect(city.name)}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center ${
+                        currentLocation === city.name ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                      }`}
+                    >
+                      <MapPin className="w-4 h-4 mr-2 text-red-500" />
+                      {city.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <p className="text-xs text-gray-500 flex items-center justify-center">
             <MapPin className="w-3 h-3 text-red-500 mr-1" />
@@ -350,7 +401,7 @@ const AuthPages: React.FC = () => {
 // Main app content with auth integration
 const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative">
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative overflow-y-auto">
       <Routes>
         <Route path="/" element={<MobileHomeScreen />}/>
         <Route path="/restaurants" element={<RestaurantsPage />}/>

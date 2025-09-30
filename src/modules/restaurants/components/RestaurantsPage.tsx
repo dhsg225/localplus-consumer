@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, Filter, MapPin, Star, Clock, Utensils, Heart, Phone } from 'lucide-react';
 import { restaurantService } from '../../../services/restaurantService';
+import ImageCarousel from './ImageCarousel';
 
 interface Restaurant {
   id: string;
@@ -154,40 +155,17 @@ const RestaurantsPage: React.FC = () => {
         ) : (
           filteredRestaurants.map((restaurant) => (
             <div key={restaurant.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
-              {/* Restaurant Image */}
-              <div className="relative h-48 bg-gray-200">
-                {restaurant.heroImage ? (
-                  <img 
-                    src={restaurant.heroImage} 
-                    alt={restaurant.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Utensils className="w-12 h-12 text-gray-400" />
-                  </div>
-                )}
-                
-                {/* Photo Count Badge */}
-                <div className="absolute top-3 right-3 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-                  10 photos
-                </div>
-                
-                {/* Swipe Indicators */}
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-                  ← Swipe
-                </div>
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-                  Swipe →
-                </div>
-                
-                {/* Pagination Dots */}
-                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                  <div className="w-2 h-2 bg-white bg-opacity-50 rounded-full"></div>
-                  <div className="w-2 h-2 bg-white bg-opacity-50 rounded-full"></div>
-                </div>
-              </div>
+              {/* Restaurant Image Carousel */}
+              <ImageCarousel 
+                images={[
+                  restaurant.heroImage || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',
+                  'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400',
+                  'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400',
+                  'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400',
+                  'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400'
+                ]}
+                restaurantName={restaurant.name}
+              />
 
               {/* Restaurant Details */}
               <div className="p-4">

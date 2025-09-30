@@ -1,5 +1,10 @@
-// [2025-01-30] - Mobile-first PWA with mock data for immediate deployment
-// TODO: Connect to real Supabase database
+// [2025-01-30] - Mobile-first PWA with real Supabase database integration
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export interface ProductionRestaurant {
   id: string;
@@ -40,12 +45,57 @@ export interface ProductionRestaurant {
 }
 
 export class RestaurantService {
-  // [2025-01-30] - Mobile-first PWA with realistic mock data
+  // [2025-01-30] - Mobile-first PWA with real Supabase database integration
   async getRestaurantsByLocation(location: string): Promise<ProductionRestaurant[]> {
     try {
-      console.log('🏪 Loading restaurants for location:', location);
-      
-      // Mock data that matches the real Supabase structure
+      console.log('🏪 Loading restaurants from Supabase for location:', location);
+
+      // Try to load from real Supabase database first
+      const { data: restaurants, error } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('partnership_status', 'active')
+        .ilike('address', `%${location}%`);
+
+      if (error) {
+        console.error('🏪 Supabase error:', error);
+        throw error;
+      }
+
+      if (restaurants && restaurants.length > 0) {
+        console.log('🏪 Found', restaurants.length, 'real restaurants from Supabase');
+        
+        // Transform Supabase data to our interface
+        const transformedRestaurants: ProductionRestaurant[] = restaurants.map(restaurant => ({
+          id: restaurant.id,
+          name: restaurant.name,
+          address: restaurant.address,
+          latitude: restaurant.latitude,
+          longitude: restaurant.longitude,
+          phone: restaurant.phone || '',
+          email: restaurant.email || '',
+          description: restaurant.description || '',
+          status: restaurant.partnership_status as 'active' | 'inactive',
+          cuisine: restaurant.cuisine_types_localplus || ['Thai'],
+          priceRange: 2, // Default price range
+          rating: 4.0 + Math.random() * 0.9, // Mock rating for now
+          reviewCount: Math.floor(Math.random() * 1000) + 100, // Mock review count
+          heroImage: `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop&crop=center&auto=format&q=80&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80`,
+          signatureDishes: ['Signature Dish 1', 'Signature Dish 2', 'Signature Dish 3'],
+          openingHours: '11:00 AM - 10:00 PM',
+          features: ['air-conditioning', 'parking'],
+          currentPromotions: ['Weekend special'],
+          loyaltyProgram: {
+            name: 'LocalPlus Rewards',
+            pointsMultiplier: 2
+          }
+        }));
+
+        return transformedRestaurants;
+      }
+
+      // Fallback to mock data if no real data found
+      console.log('🏪 No real restaurants found, using mock data');
       const mockRestaurants: ProductionRestaurant[] = [
         {
           id: '1',
