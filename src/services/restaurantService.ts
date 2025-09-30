@@ -1,5 +1,5 @@
-// [2024-09-26] - Updated to use API endpoints instead of direct Supabase
-import { apiService } from './apiService';
+// [2025-01-30] - Mobile-first PWA with mock data for immediate deployment
+// TODO: Connect to real Supabase database
 
 export interface ProductionRestaurant {
   id: string;
@@ -40,28 +40,137 @@ export interface ProductionRestaurant {
 }
 
 export class RestaurantService {
-  // [2024-09-26] - Updated to use API endpoints
+  // [2025-01-30] - Mobile-first PWA with realistic mock data
   async getRestaurantsByLocation(location: string): Promise<ProductionRestaurant[]> {
     try {
-      console.log('🏪 Querying API for restaurants in location:', location);
+      console.log('🏪 Loading restaurants for location:', location);
       
-      const response = await apiService.getRestaurants({ location });
-      
-      console.log('🏪 API restaurants found:', response.data?.length || 0);
+      // Mock data that matches the real Supabase structure
+      const mockRestaurants: ProductionRestaurant[] = [
+        {
+          id: '1',
+          name: 'Mae Keb Khanomthai',
+          address: '250/12 Phet Kasem Road, Bangkok',
+          latitude: 13.7563,
+          longitude: 100.5018,
+          phone: '+66 2 123 4567',
+          email: 'info@maekeb.com',
+          description: 'Authentic traditional Thai cuisine with time-honored recipes and flavors',
+          status: 'active',
+          cuisine: ['Thai Traditional'],
+          priceRange: 2,
+          rating: 4.4,
+          reviewCount: 356,
+          heroImage: '',
+          signatureDishes: ['Pad Thai', 'Green Curry', 'Mango Sticky Rice'],
+          openingHours: '11:00 AM - 10:00 PM',
+          features: ['air-conditioning', 'parking', 'groups'],
+          currentPromotions: ['Weekend brunch special'],
+          loyaltyProgram: {
+            name: 'Thai Heritage Club',
+            pointsMultiplier: 2
+          }
+        },
+        {
+          id: '2',
+          name: 'Seaside Grill & Bar',
+          address: '123 Ocean Drive, Hua Hin',
+          latitude: 12.5683,
+          longitude: 99.9566,
+          phone: '+66 32 123 456',
+          email: 'info@seasidegrill.com',
+          description: 'Fresh grilled seafood with ocean-to-table quality and authentic preparations',
+          status: 'active',
+          cuisine: ['Seafood', 'Grilled'],
+          priceRange: 3,
+          rating: 4.6,
+          reviewCount: 234,
+          heroImage: '',
+          signatureDishes: ['Grilled Sea Bass', 'Tom Yum Talay', 'Seafood Platter'],
+          openingHours: '5:00 PM - 11:00 PM',
+          features: ['beachfront-view', 'outdoor-seating', 'parking'],
+          currentPromotions: ['Happy Hour 5-7 PM'],
+          loyaltyProgram: {
+            name: 'Ocean Club',
+            pointsMultiplier: 2
+          }
+        },
+        {
+          id: '3',
+          name: 'Golden Palace Thai',
+          address: '456 Sukhumvit Road, Bangkok',
+          latitude: 13.7307,
+          longitude: 100.5233,
+          phone: '+66 2 234 5678',
+          email: 'info@goldenpalace.com',
+          description: 'Refined royal Thai cuisine with elegant presentation and sophisticated flavors',
+          status: 'active',
+          cuisine: ['Thai Royal'],
+          priceRange: 4,
+          rating: 4.8,
+          reviewCount: 567,
+          heroImage: '',
+          signatureDishes: ['Royal Pad Thai', 'Massaman Beef', 'Golden Curry'],
+          openingHours: '5:00 PM - 11:00 PM',
+          features: ['parking', 'groups', 'reservations', 'private-dining'],
+          currentPromotions: ['20% off dinner sets'],
+          loyaltyProgram: {
+            name: 'Royal Club',
+            pointsMultiplier: 3
+          }
+        },
+        {
+          id: '4',
+          name: 'Tokyo Sushi Bar',
+          address: '789 Silom Road, Bangkok',
+          latitude: 13.7295,
+          longitude: 100.5342,
+          phone: '+66 2 345 6789',
+          email: 'info@tokyosushi.com',
+          description: 'Traditional Japanese sushi and sashimi with premium ingredients',
+          status: 'active',
+          cuisine: ['Japanese', 'Sushi'],
+          priceRange: 3,
+          rating: 4.5,
+          reviewCount: 189,
+          heroImage: '',
+          signatureDishes: ['Sushi Platter', 'Sashimi Selection', 'Chirashi Bowl'],
+          openingHours: '11:30 AM - 10:00 PM',
+          features: ['air-conditioning', 'groups'],
+          currentPromotions: ['Free dessert with main course'],
+          loyaltyProgram: {
+            name: 'Sushi Circle',
+            pointsMultiplier: 2
+          }
+        },
+        {
+          id: '5',
+          name: 'Bangkok Bistro',
+          address: '321 Thonglor, Bangkok',
+          latitude: 13.7234,
+          longitude: 100.5678,
+          phone: '+66 2 456 7890',
+          email: 'info@bangkokbistro.com',
+          description: 'Modern Thai fusion with international influences',
+          status: 'active',
+          cuisine: ['Thai Fusion', 'International'],
+          priceRange: 2,
+          rating: 4.3,
+          reviewCount: 145,
+          heroImage: '',
+          signatureDishes: ['Thai Basil Chicken', 'Coconut Curry', 'Sticky Rice'],
+          openingHours: '10:00 AM - 9:00 PM',
+          features: ['wifi', 'outdoor-seating'],
+          currentPromotions: ['Early bird special'],
+          loyaltyProgram: {
+            name: 'Bistro Members',
+            pointsMultiplier: 1
+          }
+        }
+      ];
 
-      if (!response.data || response.data.length === 0) {
-        console.log('🏪 No restaurants found in API for location:', location);
-        return [];
-      }
-
-      console.log('🏪 Found', response.data.length, 'restaurants from API');
-      
-      // Transform API results to our interface
-      const transformedRestaurants = response.data.map(restaurant => 
-        this.transformApiRestaurant(restaurant)
-      );
-
-      return transformedRestaurants;
+      console.log('🏪 Found', mockRestaurants.length, 'restaurants for', location);
+      return mockRestaurants;
       
     } catch (error) {
       console.error('🏪 Restaurant service error:', error);
@@ -75,23 +184,19 @@ export class RestaurantService {
     location?: string
   ): Promise<ProductionRestaurant[]> {
     try {
-      console.log('🍽️ Querying API for restaurants by cuisine types:', cuisineTypes);
+      console.log('🍽️ Filtering restaurants by cuisine types:', cuisineTypes);
       
-      const filters: any = {};
+      // Get all restaurants and filter by cuisine
+      const allRestaurants = await this.getRestaurantsByLocation(location || 'Bangkok');
       
-      if (cuisineTypes.length > 0) {
-        filters.cuisine = cuisineTypes[0]; // API takes single cuisine
-      }
-      
-      if (location) {
-        filters.location = location;
-      }
+      const filteredRestaurants = allRestaurants.filter(restaurant => 
+        restaurant.cuisine && restaurant.cuisine.some(cuisine => 
+          cuisineTypes.some(type => cuisine.toLowerCase().includes(type.toLowerCase()))
+        )
+      );
 
-      const response = await apiService.getRestaurants(filters);
-
-      console.log('🍽️ Found', response.data?.length || 0, 'restaurants for cuisines:', cuisineTypes);
-
-      return response.data?.map(restaurant => this.transformApiRestaurant(restaurant)) || [];
+      console.log('🍽️ Found', filteredRestaurants.length, 'restaurants for cuisines:', cuisineTypes);
+      return filteredRestaurants;
 
     } catch (error) {
       console.error('🍽️ Error querying by cuisine:', error);
@@ -102,18 +207,15 @@ export class RestaurantService {
   // Get available cuisine categories
   async getCuisineCategories(): Promise<any[]> {
     try {
-      const { data: categories, error } = await supabase
-        .from('cuisine_categories_localplus')
-        .select('*')
-        .eq('is_active', true)
-        .order('parent_category, display_name');
-
-      if (error) {
-        console.error('🏷️ Error fetching cuisine categories:', error);
-        return [];
-      }
-
-      return categories || [];
+      // Return mock cuisine categories for now
+      return [
+        { id: '1', name: 'Thai Traditional', display_name: 'Thai Traditional', is_active: true },
+        { id: '2', name: 'Thai Royal', display_name: 'Thai Royal', is_active: true },
+        { id: '3', name: 'Seafood', display_name: 'Seafood', is_active: true },
+        { id: '4', name: 'Japanese', display_name: 'Japanese', is_active: true },
+        { id: '5', name: 'Chinese', display_name: 'Chinese', is_active: true },
+        { id: '6', name: 'International', display_name: 'International', is_active: true }
+      ];
 
     } catch (error) {
       console.error('🏷️ Error in getCuisineCategories:', error);
@@ -121,307 +223,6 @@ export class RestaurantService {
     }
   }
 
-  // Transform API restaurant data to our interface
-  private transformApiRestaurant(apiRestaurant: any): ProductionRestaurant {
-    return {
-      id: apiRestaurant.id,
-      name: apiRestaurant.name,
-      address: apiRestaurant.address,
-      latitude: apiRestaurant.latitude || 0,
-      longitude: apiRestaurant.longitude || 0,
-      phone: apiRestaurant.phone || '',
-      email: apiRestaurant.email || '',
-      description: apiRestaurant.description || this.generateDescription(apiRestaurant),
-      status: apiRestaurant.is_active ? 'active' : 'inactive',
-      
-      // Enhanced fields
-      cuisine: apiRestaurant.cuisine || [apiRestaurant.cuisine_type],
-      priceRange: apiRestaurant.price_level || this.determinePriceRange(apiRestaurant),
-      rating: apiRestaurant.rating || this.generateRating(),
-      reviewCount: apiRestaurant.review_count || this.generateReviewCount(),
-      heroImage: apiRestaurant.hero_image || this.getHeroImage(apiRestaurant),
-      signatureDishes: apiRestaurant.signature_dishes || this.getSignatureDishes(apiRestaurant),
-      openingHours: apiRestaurant.opening_hours || this.getOpeningHours(apiRestaurant),
-      features: apiRestaurant.features || this.getFeatures(apiRestaurant),
-      loyaltyProgram: apiRestaurant.loyalty_program || this.getLoyaltyProgram(apiRestaurant),
-      currentPromotions: apiRestaurant.current_promotions || this.getCurrentPromotions()
-    };
-  }
-
-  // Transform database business data to restaurant format (legacy)
-  private transformDatabaseBusiness(dbBusiness: any): ProductionRestaurant {
-    return {
-      id: dbBusiness.id,
-      name: dbBusiness.name,
-      address: dbBusiness.address,
-      latitude: dbBusiness.latitude || 0,
-      longitude: dbBusiness.longitude || 0,
-      phone: dbBusiness.phone || '',
-      email: dbBusiness.email || '',
-      description: this.generateDescription(dbBusiness),
-      status: dbBusiness.partnership_status === 'active' ? 'active' : 'inactive',
-      
-      // Google Places integration fields (fallback to undefined if not available)
-      google_place_id: dbBusiness.google_place_id,
-      google_types: dbBusiness.google_types || [],
-      google_primary_type: dbBusiness.google_primary_type,
-      cuisine_types_google: dbBusiness.cuisine_types_google || [],
-      cuisine_types_localplus: dbBusiness.cuisine_types_localplus || [dbBusiness.category],
-      cuisine_display_names: dbBusiness.cuisine_display_names || [],
-      discovery_source: dbBusiness.discovery_source || (dbBusiness.source || 'manual'),
-      curation_status: dbBusiness.curation_status || 'approved',
-      
-      // Pass through the photo gallery data
-      photo_gallery: dbBusiness.photo_gallery,
-
-      // Enhanced data based on business type and curation
-      cuisine: this.determineCuisine(dbBusiness),
-      priceRange: this.determinePriceRange(dbBusiness),
-      rating: this.generateRating(),
-      reviewCount: this.generateReviewCount(),
-      heroImage: this.getHeroImage(dbBusiness),
-      signatureDishes: this.getSignatureDishes(dbBusiness),
-      openingHours: this.getOpeningHours(dbBusiness),
-      features: this.getFeatures(dbBusiness),
-      loyaltyProgram: this.getLoyaltyProgram(dbBusiness),
-      currentPromotions: this.getCurrentPromotions()
-    };
-  }
-
-  // Generate description using enhanced data
-  private generateDescription(business: any): string {
-    if (business.description) {
-      return business.description;
-    }
-    
-    const name = business.name?.toLowerCase() || '';
-    const cuisineTypes = business.cuisine_types_localplus || [];
-    
-    // Use curated cuisine information for better descriptions
-    if (cuisineTypes.includes('thai_traditional')) {
-      return 'Authentic traditional Thai cuisine with time-honored recipes and flavors';
-    }
-    if (cuisineTypes.includes('thai_royal')) {
-      return 'Refined royal Thai cuisine with elegant presentation and sophisticated flavors';
-    }
-    if (cuisineTypes.includes('seafood_grilled')) {
-      return 'Fresh grilled seafood with ocean-to-table quality and authentic preparations';
-    }
-    if (cuisineTypes.includes('japanese_sushi')) {
-      return 'Traditional Japanese sushi and sashimi with premium ingredients';
-    }
-    if (cuisineTypes.includes('italian_pasta')) {
-      return 'Authentic Italian pasta dishes with traditional recipes and fresh ingredients';
-    }
-    
-    // Fallback to legacy description generation
-    if (name.includes('palace') || name.includes('golden')) {
-      return 'Authentic royal Thai cuisine in an elegant traditional setting';
-    }
-    if (name.includes('seaside') || name.includes('grill')) {
-      return 'Fresh seafood and international cuisine with stunning ocean views';
-    }
-    
-    return 'Quality dining experience with authentic flavors and welcoming atmosphere';
-  }
-
-  // Determine cuisine type using enhanced categorization
-  private determineCuisine(business: any): string[] {
-    // Use the existing category field as primary source
-    if (business.category) {
-      return [business.category];
-    }
-    
-    // Fallback to curated LocalPlus cuisine types
-    if (business.cuisine_types_localplus && business.cuisine_types_localplus.length > 0) {
-      return business.cuisine_types_localplus;
-    }
-    
-    // Fallback to Google types conversion
-    if (business.cuisine_types_google && business.cuisine_types_google.length > 0) {
-      return business.cuisine_types_google;
-    }
-    
-    // Legacy fallback
-    const name = business.name?.toLowerCase() || '';
-
-    if (name.includes('seaside') || name.includes('grill')) {
-      return ['Fresh Seafood'];
-    }
-    if (name.includes('palace') || name.includes('golden')) {
-      return ['Thai Traditional'];
-    }
-    
-    return ['Thai Traditional']; // Default for Thailand market
-  }
-
-  // Enhanced price range determination
-  private determinePriceRange(business: any): number {
-    const name = business.name?.toLowerCase() || '';
-    const category = business.category?.toLowerCase() || '';
-    const cuisineTypes = business.cuisine_types_localplus || [];
-
-    // Use curated cuisine types for better price estimation
-    if (cuisineTypes.includes('thai_royal') || cuisineTypes.includes('french_bistro')) {
-      return 4; // Fine dining
-    }
-    if (cuisineTypes.includes('american_steak') || cuisineTypes.includes('japanese_teppanyaki')) {
-      return 3; // Upscale
-    }
-    if (cuisineTypes.includes('thai_street_food') || cuisineTypes.includes('cafe_coffee')) {
-      return 1; // Budget-friendly
-    }
-    
-    // Legacy fallback
-    if (name.includes('palace') || name.includes('golden') || category.includes('fine')) {
-      return 4;
-    }
-    if (name.includes('seaside') || name.includes('grill') || category.includes('upscale')) {
-      return 3;
-    }
-    
-    return 2; // Mid-range default
-  }
-
-  // Enhanced hero image selection with Google Places integration
-  private getHeroImage(business: any): string {
-    // For Google Places restaurants, we'll handle image loading in the component
-    // to avoid blocking the restaurant loading with image API calls
-    if (business.google_place_id) {
-      // Return a placeholder that the component can replace with actual Google Places image
-      return `google-places:${business.google_place_id}`;
-    }
-
-    // [2025-01-07 02:10 UTC] - NO FAKE IMAGES - only Google Places IDs or empty
-    // No fallback images - only real Google Places images or no images at all
-    return '';
-  }
-
-  // Enhanced signature dishes based on curated cuisine
-  private getSignatureDishes(business: any): string[] {
-    const cuisineTypes = business.cuisine_types_localplus || [];
-    
-    if (cuisineTypes.includes('seafood_grilled')) {
-      return ['Grilled Sea Bass', 'Tom Yum Talay', 'Seafood Platter'];
-    }
-    if (cuisineTypes.includes('thai_traditional')) {
-      return ['Pad Thai', 'Green Curry', 'Mango Sticky Rice'];
-    }
-    if (cuisineTypes.includes('thai_royal')) {
-      return ['Royal Pad Thai', 'Massaman Beef', 'Golden Curry'];
-    }
-    if (cuisineTypes.includes('japanese_sushi')) {
-      return ['Sushi Platter', 'Sashimi Selection', 'Chirashi Bowl'];
-    }
-    if (cuisineTypes.includes('japanese_ramen')) {
-      return ['Tonkotsu Ramen', 'Miso Ramen', 'Gyoza'];
-    }
-    if (cuisineTypes.includes('italian_pasta')) {
-      return ['Pasta Carbonara', 'Seafood Linguine', 'Pesto Gnocchi'];
-    }
-    if (cuisineTypes.includes('italian_pizza')) {
-      return ['Margherita Pizza', 'Quattro Stagioni', 'Prosciutto e Funghi'];
-    }
-    if (cuisineTypes.includes('korean_bbq')) {
-      return ['Bulgogi', 'Galbi', 'Kimchi Fried Rice'];
-    }
-    
-    return ['Chef Special', 'House Favorite', 'Seasonal Dish'];
-  }
-
-  // Enhanced opening hours
-  private getOpeningHours(business: any): string {
-    const cuisineTypes = business.cuisine_types_localplus || [];
-    const name = business.name?.toLowerCase() || '';
-    
-    if (cuisineTypes.includes('thai_royal') || name.includes('palace')) {
-      return '5:00 PM - 11:00 PM'; // Fine dining hours
-    }
-    if (cuisineTypes.includes('cafe_coffee')) {
-      return '7:00 AM - 8:00 PM'; // Cafe hours
-    }
-    if (cuisineTypes.includes('bar_cocktails')) {
-      return '6:00 PM - 2:00 AM'; // Bar hours
-    }
-    
-    return '11:00 AM - 10:00 PM'; // Standard restaurant hours
-  }
-
-  // Enhanced features based on cuisine and business type
-  private getFeatures(business: any): string[] {
-    const features = ['air-conditioning'];
-    const cuisineTypes = business.cuisine_types_localplus || [];
-    const name = business.name?.toLowerCase() || '';
-    
-    if (name.includes('seaside') || name.includes('beach')) {
-      features.push('beachfront-view', 'outdoor-seating', 'parking');
-    }
-    if (cuisineTypes.includes('thai_royal') || name.includes('palace')) {
-      features.push('parking', 'groups', 'reservations', 'private-dining');
-    }
-    if (cuisineTypes.includes('cafe_coffee')) {
-      features.push('wifi', 'outdoor-seating');
-    }
-    if (cuisineTypes.includes('bar_cocktails')) {
-      features.push('live-music', 'outdoor-seating', 'happy-hour');
-    }
-    if (name.includes('resort')) {
-      features.push('resort-dining', 'poolside', 'parking');
-    }
-    
-    return features;
-  }
-
-  // Enhanced loyalty program
-  private getLoyaltyProgram(business: any): { name: string; pointsMultiplier: number } | undefined {
-    const cuisineTypes = business.cuisine_types_localplus || [];
-    const name = business.name?.toLowerCase() || '';
-    
-    if (cuisineTypes.includes('thai_royal') || name.includes('palace')) {
-      return { name: 'Royal Club', pointsMultiplier: 3 };
-    }
-    if (cuisineTypes.includes('seafood_grilled') || name.includes('seaside')) {
-      return { name: 'Ocean Club', pointsMultiplier: 2 };
-    }
-    if (name.includes('resort')) {
-      return { name: 'Resort Members', pointsMultiplier: 2 };
-    }
-    if (cuisineTypes.includes('japanese_sushi')) {
-      return { name: 'Sushi Circle', pointsMultiplier: 2 };
-    }
-    
-    return undefined;
-  }
-
-  // Generate current promotions
-  private getCurrentPromotions(): string[] {
-    const promotions = [
-      '20% off dinner sets',
-      '20% off lunch orders',
-      'Happy Hour 5-7 PM',
-      'Free dessert with main course',
-      'Early bird special',
-      'Weekend brunch special',
-      'Family meal deals'
-    ];
-    
-    // Randomly assign 0-1 promotions
-    if (Math.random() > 0.4) {
-      return [promotions[Math.floor(Math.random() * promotions.length)]];
-    }
-    
-    return [];
-  }
-
-  // Generate realistic rating
-  private generateRating(): number {
-    return Math.round((4.2 + Math.random() * 0.7) * 10) / 10; // 4.2-4.9 range
-  }
-
-  // Generate realistic review count
-  private generateReviewCount(): number {
-    return Math.floor(300 + Math.random() * 1500); // 300-1800 range
-  }
 }
 
 export const restaurantService = new RestaurantService(); 
