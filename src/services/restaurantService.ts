@@ -1,10 +1,15 @@
 // [2025-01-30] - Mobile-first PWA with real Supabase database integration
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Initialize Supabase client with proper environment variable handling
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.warn('🏪 Supabase environment variables not configured. Using mock data.');
+}
+
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 export interface ProductionRestaurant {
   id: string;
@@ -48,7 +53,13 @@ export class RestaurantService {
   // [2025-01-30] - Mobile-first PWA with real Supabase database integration
   async getRestaurantsByLocation(location: string): Promise<ProductionRestaurant[]> {
     try {
-      console.log('🏪 Loading restaurants from Supabase for location:', location);
+      console.log('🏪 Loading restaurants for location:', location);
+
+      // Check if Supabase is configured
+      if (!supabase) {
+        console.log('🏪 Supabase not configured, using mock data');
+        return this.getMockRestaurants(location);
+      }
 
       // Try to load from real Supabase database first
       const { data: restaurants, error } = await supabase
@@ -59,7 +70,8 @@ export class RestaurantService {
 
       if (error) {
         console.error('🏪 Supabase error:', error);
-        throw error;
+        console.log('🏪 Falling back to mock data');
+        return this.getMockRestaurants(location);
       }
 
       if (restaurants && restaurants.length > 0) {
@@ -96,7 +108,18 @@ export class RestaurantService {
 
       // Fallback to mock data if no real data found
       console.log('🏪 No real restaurants found, using mock data');
-      const mockRestaurants: ProductionRestaurant[] = [
+      return this.getMockRestaurants(location);
+
+    } catch (error) {
+      console.error('🏪 Restaurant service error:', error);
+      console.log('🏪 Using mock data as fallback');
+      return this.getMockRestaurants(location);
+    }
+  }
+
+  // Mock restaurants data
+  private getMockRestaurants(location: string): ProductionRestaurant[] {
+    const mockRestaurants: ProductionRestaurant[] = [
         {
           id: '1',
           name: 'Mae Keb Khanomthai',
@@ -221,12 +244,7 @@ export class RestaurantService {
 
       console.log('🏪 Found', mockRestaurants.length, 'restaurants for', location);
       return mockRestaurants;
-      
-    } catch (error) {
-      console.error('🏪 Restaurant service error:', error);
-      return [];
     }
-  }
 
   // Get restaurants by curated cuisine types
   async getRestaurantsByCuisine(

@@ -4,6 +4,7 @@ import RestaurantsPage from './modules/restaurants/components/RestaurantsPage';
 import ServicesPage from './modules/services/components/ServicesPage';
 import EventsPage from './modules/events/components/EventsPage';
 import NewsPage from './modules/news/components/NewsPage';
+import SavingsPassportPage from './modules/savings-passport/components/SavingsPassportPage';
 import { AuthProvider, useAuth } from './modules/auth/context/AuthContext';
 import LoginForm from './modules/auth/components/LoginForm';
 import SignupForm from './modules/auth/components/SignupForm';
@@ -160,7 +161,7 @@ const MobileHomeScreen: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative overflow-y-auto">
+    <div className="bg-gray-50 max-w-md mx-auto relative" style={{ height: '100vh', overflowY: 'auto' }}>
       {/* Header Section */}
       <div className="bg-white px-4 pt-4 pb-2">
             <div className="text-center">
@@ -226,20 +227,22 @@ const MobileHomeScreen: React.FC = () => {
         </div>
 
         {/* Savings Passport Card */}
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <CreditCard className="w-6 h-6 mr-3" />
-              <div>
-                <h3 className="font-bold text-lg">Savings Passport</h3>
-                <p className="text-sm opacity-90">Instant savings at 500+ businesses</p>
+        <Link to="/savings-passport" className="block">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white hover:from-orange-600 hover:to-orange-700 transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <CreditCard className="w-6 h-6 mr-3" />
+                <div>
+                  <h3 className="font-bold text-lg">Savings Passport</h3>
+                  <p className="text-sm opacity-90">Instant savings at 500+ businesses</p>
+                </div>
+              </div>
+              <div className="bg-yellow-400 text-black px-3 py-1 rounded-lg text-xs font-bold text-center">
+                ฿199<br/>MONTH
               </div>
             </div>
-            <div className="bg-yellow-400 text-black px-3 py-1 rounded-lg text-xs font-bold text-center">
-              ฿199<br/>MONTH
-            </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Quick Actions */}
@@ -401,13 +404,14 @@ const AuthPages: React.FC = () => {
 // Main app content with auth integration
 const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative overflow-y-auto">
+    <div className="bg-gray-50 max-w-md mx-auto relative" style={{ height: '100vh', overflowY: 'auto' }}>
       <Routes>
         <Route path="/" element={<MobileHomeScreen />}/>
         <Route path="/restaurants" element={<RestaurantsPage />}/>
         <Route path="/services" element={<ServicesPage />}/>
         <Route path="/events" element={<EventsPage />}/>
         <Route path="/news" element={<NewsPage />}/>
+        <Route path="/savings-passport" element={<SavingsPassportPage />}/>
         <Route path="/auth/login" element={<AuthPages />} />
         <Route path="/auth/signup" element={<AuthPages />} />
         <Route path="/profile" element={
