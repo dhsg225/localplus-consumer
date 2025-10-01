@@ -13,6 +13,7 @@ interface Restaurant {
   cuisine: string[];
   priceRange: number;
   heroImage: string;
+  photoGallery: string[];
   signatureDishes: string[];
   isOpen: boolean;
   features: string[];
@@ -27,6 +28,7 @@ interface Restaurant {
 const RestaurantsPage: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState<string>('');
 
@@ -37,10 +39,11 @@ const RestaurantsPage: React.FC = () => {
   const loadRestaurants = async () => {
     try {
       setLoading(true);
+      setError(null);
       console.log('🏪 Loading restaurants from Supabase...');
       
       // Load restaurants from Supabase via the restaurant service
-      const productionRestaurants = await restaurantService.getRestaurantsByLocation('Bangkok');
+      const productionRestaurants = await restaurantService.getRestaurantsByLocation('Hua Hin');
       console.log('🏪 Loaded restaurants:', productionRestaurants.length);
       
       // Transform to our interface
@@ -64,7 +67,7 @@ const RestaurantsPage: React.FC = () => {
       setRestaurants(transformedRestaurants);
     } catch (error) {
       console.error('🏪 Error loading restaurants:', error);
-      // Fallback to empty array
+      setError(error instanceof Error ? error.message : 'Failed to load restaurants from database');
       setRestaurants([]);
     } finally {
       setLoading(false);
@@ -90,7 +93,7 @@ const RestaurantsPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-50 pb-20 max-w-md mx-auto relative" style={{ height: '100vh', overflowY: 'auto' }}>
+    <div className="bg-gray-50 pb-20 max-w-md mx-auto relative hide-scrollbar" style={{ height: '100vh', overflowY: 'auto' }}>
       {/* Mobile Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="flex items-center justify-between px-4 py-3">
@@ -145,25 +148,43 @@ const RestaurantsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Restaurant Cards */}
-      <div className="px-4 py-4 space-y-4">
-        {filteredRestaurants.length === 0 ? (
-          <div className="text-center py-8">
-            <Utensils className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No restaurants found</p>
+      {/* Error Display */}
+      {error && (
+        <div className="px-4 py-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-5 h-5 text-red-400">⚠️</div>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Database Connection Error</h3>
+                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <button 
+                  onClick={loadRestaurants}
+                  className="mt-2 text-sm text-red-600 hover:text-red-500 underline"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
           </div>
-        ) : (
-          filteredRestaurants.map((restaurant) => (
+        </div>
+      )}
+
+      {/* Restaurant Cards */}
+      {!error && (
+        <div className="px-4 py-4 space-y-4">
+          {filteredRestaurants.length === 0 ? (
+            <div className="text-center py-8">
+              <Utensils className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No restaurants found</p>
+            </div>
+          ) : (
+            filteredRestaurants.map((restaurant) => (
             <div key={restaurant.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
               {/* Restaurant Image Carousel */}
               <ImageCarousel 
-                images={[
-                  restaurant.heroImage || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',
-                  'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400',
-                  'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400',
-                  'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400',
-                  'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400'
-                ]}
+                images={restaurant.photoGallery || []}
                 restaurantName={restaurant.name}
               />
 
@@ -234,8 +255,12 @@ const RestaurantsPage: React.FC = () => {
               </div>
             </div>
           ))
-        )}
-      </div>
+          )}
+        </div>
+      )}
+      
+      {/* Bottom padding to ensure content is not hidden */}
+      <div className="h-20"></div>
     </div>
   );
 };

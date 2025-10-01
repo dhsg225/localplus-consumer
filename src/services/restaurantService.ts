@@ -36,16 +36,17 @@ export interface ProductionRestaurant {
   // Existing enhanced data
   cuisine?: string[];
   priceRange?: number;
-  rating?: number;
-  reviewCount?: number;
+  rating?: number | null;
+  reviewCount?: number | null;
   heroImage?: string;
+  photoGallery?: string[];
   signatureDishes?: string[];
-  openingHours?: string;
+  openingHours?: string | null;
   features?: string[];
   loyaltyProgram?: {
     name: string;
     pointsMultiplier: number;
-  };
+  } | null;
   currentPromotions?: string[];
 }
 
@@ -57,21 +58,19 @@ export class RestaurantService {
 
       // Check if Supabase is configured
       if (!supabase) {
-        console.log('🏪 Supabase not configured, using mock data');
-        return this.getMockRestaurants(location);
+        console.log('🏪 Supabase not configured - no restaurants available');
+        return [];
       }
 
       // Try to load from real Supabase database first
       const { data: restaurants, error } = await supabase
         .from('businesses')
         .select('*')
-        .eq('partnership_status', 'active')
-        .ilike('address', `%${location}%`);
+        .eq('partnership_status', 'active');
 
       if (error) {
         console.error('🏪 Supabase error:', error);
-        console.log('🏪 Falling back to mock data');
-        return this.getMockRestaurants(location);
+        throw new Error(`Supabase connection failed: ${error.message}`);
       }
 
       if (restaurants && restaurants.length > 0) {
@@ -90,161 +89,34 @@ export class RestaurantService {
           status: restaurant.partnership_status as 'active' | 'inactive',
           cuisine: restaurant.cuisine_types_localplus || ['Thai'],
           priceRange: 2, // Default price range
-          rating: 4.0 + Math.random() * 0.9, // Mock rating for now
-          reviewCount: Math.floor(Math.random() * 1000) + 100, // Mock review count
-          heroImage: `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop&crop=center&auto=format&q=80&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80`,
-          signatureDishes: ['Signature Dish 1', 'Signature Dish 2', 'Signature Dish 3'],
-          openingHours: '11:00 AM - 10:00 PM',
-          features: ['air-conditioning', 'parking'],
-          currentPromotions: ['Weekend special'],
-          loyaltyProgram: {
-            name: 'LocalPlus Rewards',
-            pointsMultiplier: 2
-          }
+          rating: null, // No mock rating
+          reviewCount: null, // No mock review count
+          heroImage: restaurant.photo_gallery && Array.isArray(restaurant.photo_gallery) && restaurant.photo_gallery.length > 0 
+            ? restaurant.photo_gallery[0] 
+            : null, // No fallback image - let the UI handle missing images
+          photoGallery: restaurant.photo_gallery && Array.isArray(restaurant.photo_gallery) && restaurant.photo_gallery.length > 0
+            ? restaurant.photo_gallery 
+            : [], // Full photo gallery array
+          signatureDishes: [], // No mock dishes
+          openingHours: null, // No mock hours
+          features: [], // No mock features
+          currentPromotions: [], // No mock promotions
+          loyaltyProgram: null // No mock loyalty program
         }));
 
         return transformedRestaurants;
       }
 
-      // Fallback to mock data if no real data found
-      console.log('🏪 No real restaurants found, using mock data');
-      return this.getMockRestaurants(location);
+      // No real data found - return empty array to show actual error
+      console.log('🏪 No real restaurants found in Supabase database');
+      return [];
 
     } catch (error) {
       console.error('🏪 Restaurant service error:', error);
-      console.log('🏪 Using mock data as fallback');
-      return this.getMockRestaurants(location);
+      throw error; // Re-throw the error instead of hiding it with mock data
     }
   }
 
-  // Mock restaurants data
-  private getMockRestaurants(location: string): ProductionRestaurant[] {
-    const mockRestaurants: ProductionRestaurant[] = [
-        {
-          id: '1',
-          name: 'Mae Keb Khanomthai',
-          address: '250/12 Phet Kasem Road, Bangkok',
-          latitude: 13.7563,
-          longitude: 100.5018,
-          phone: '+66 2 123 4567',
-          email: 'info@maekeb.com',
-          description: 'Authentic traditional Thai cuisine with time-honored recipes and flavors',
-          status: 'active',
-          cuisine: ['Thai Traditional'],
-          priceRange: 2,
-          rating: 4.4,
-          reviewCount: 356,
-          heroImage: '',
-          signatureDishes: ['Pad Thai', 'Green Curry', 'Mango Sticky Rice'],
-          openingHours: '11:00 AM - 10:00 PM',
-          features: ['air-conditioning', 'parking', 'groups'],
-          currentPromotions: ['Weekend brunch special'],
-          loyaltyProgram: {
-            name: 'Thai Heritage Club',
-            pointsMultiplier: 2
-          }
-        },
-        {
-          id: '2',
-          name: 'Seaside Grill & Bar',
-          address: '123 Ocean Drive, Hua Hin',
-          latitude: 12.5683,
-          longitude: 99.9566,
-          phone: '+66 32 123 456',
-          email: 'info@seasidegrill.com',
-          description: 'Fresh grilled seafood with ocean-to-table quality and authentic preparations',
-          status: 'active',
-          cuisine: ['Seafood', 'Grilled'],
-          priceRange: 3,
-          rating: 4.6,
-          reviewCount: 234,
-          heroImage: '',
-          signatureDishes: ['Grilled Sea Bass', 'Tom Yum Talay', 'Seafood Platter'],
-          openingHours: '5:00 PM - 11:00 PM',
-          features: ['beachfront-view', 'outdoor-seating', 'parking'],
-          currentPromotions: ['Happy Hour 5-7 PM'],
-          loyaltyProgram: {
-            name: 'Ocean Club',
-            pointsMultiplier: 2
-          }
-        },
-        {
-          id: '3',
-          name: 'Golden Palace Thai',
-          address: '456 Sukhumvit Road, Bangkok',
-          latitude: 13.7307,
-          longitude: 100.5233,
-          phone: '+66 2 234 5678',
-          email: 'info@goldenpalace.com',
-          description: 'Refined royal Thai cuisine with elegant presentation and sophisticated flavors',
-          status: 'active',
-          cuisine: ['Thai Royal'],
-          priceRange: 4,
-          rating: 4.8,
-          reviewCount: 567,
-          heroImage: '',
-          signatureDishes: ['Royal Pad Thai', 'Massaman Beef', 'Golden Curry'],
-          openingHours: '5:00 PM - 11:00 PM',
-          features: ['parking', 'groups', 'reservations', 'private-dining'],
-          currentPromotions: ['20% off dinner sets'],
-          loyaltyProgram: {
-            name: 'Royal Club',
-            pointsMultiplier: 3
-          }
-        },
-        {
-          id: '4',
-          name: 'Tokyo Sushi Bar',
-          address: '789 Silom Road, Bangkok',
-          latitude: 13.7295,
-          longitude: 100.5342,
-          phone: '+66 2 345 6789',
-          email: 'info@tokyosushi.com',
-          description: 'Traditional Japanese sushi and sashimi with premium ingredients',
-          status: 'active',
-          cuisine: ['Japanese', 'Sushi'],
-          priceRange: 3,
-          rating: 4.5,
-          reviewCount: 189,
-          heroImage: '',
-          signatureDishes: ['Sushi Platter', 'Sashimi Selection', 'Chirashi Bowl'],
-          openingHours: '11:30 AM - 10:00 PM',
-          features: ['air-conditioning', 'groups'],
-          currentPromotions: ['Free dessert with main course'],
-          loyaltyProgram: {
-            name: 'Sushi Circle',
-            pointsMultiplier: 2
-          }
-        },
-        {
-          id: '5',
-          name: 'Bangkok Bistro',
-          address: '321 Thonglor, Bangkok',
-          latitude: 13.7234,
-          longitude: 100.5678,
-          phone: '+66 2 456 7890',
-          email: 'info@bangkokbistro.com',
-          description: 'Modern Thai fusion with international influences',
-          status: 'active',
-          cuisine: ['Thai Fusion', 'International'],
-          priceRange: 2,
-          rating: 4.3,
-          reviewCount: 145,
-          heroImage: '',
-          signatureDishes: ['Thai Basil Chicken', 'Coconut Curry', 'Sticky Rice'],
-          openingHours: '10:00 AM - 9:00 PM',
-          features: ['wifi', 'outdoor-seating'],
-          currentPromotions: ['Early bird special'],
-          loyaltyProgram: {
-            name: 'Bistro Members',
-            pointsMultiplier: 1
-          }
-        }
-      ];
-
-      console.log('🏪 Found', mockRestaurants.length, 'restaurants for', location);
-      return mockRestaurants;
-    }
 
   // Get restaurants by curated cuisine types
   async getRestaurantsByCuisine(
@@ -275,15 +147,8 @@ export class RestaurantService {
   // Get available cuisine categories
   async getCuisineCategories(): Promise<any[]> {
     try {
-      // Return mock cuisine categories for now
-      return [
-        { id: '1', name: 'Thai Traditional', display_name: 'Thai Traditional', is_active: true },
-        { id: '2', name: 'Thai Royal', display_name: 'Thai Royal', is_active: true },
-        { id: '3', name: 'Seafood', display_name: 'Seafood', is_active: true },
-        { id: '4', name: 'Japanese', display_name: 'Japanese', is_active: true },
-        { id: '5', name: 'Chinese', display_name: 'Chinese', is_active: true },
-        { id: '6', name: 'International', display_name: 'International', is_active: true }
-      ];
+      // Return empty array - no mock data
+      return [];
 
     } catch (error) {
       console.error('🏷️ Error in getCuisineCategories:', error);

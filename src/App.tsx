@@ -5,6 +5,8 @@ import ServicesPage from './modules/services/components/ServicesPage';
 import EventsPage from './modules/events/components/EventsPage';
 import NewsPage from './modules/news/components/NewsPage';
 import SavingsPassportPage from './modules/savings-passport/components/SavingsPassportPage';
+import LoyaltyCardPage from './modules/savings-passport/components/LoyaltyCardPage';
+import LoyaltyCardsPage from './modules/loyalty/components/LoyaltyCardsPage';
 import { AuthProvider, useAuth } from './modules/auth/context/AuthContext';
 import LoginForm from './modules/auth/components/LoginForm';
 import SignupForm from './modules/auth/components/SignupForm';
@@ -15,15 +17,16 @@ import { Home, Search, MessageCircle, CreditCard, User, MapPin, Clock, Star, Cal
 // Mobile-first PWA Home Screen
 const MobileHomeScreen: React.FC = () => {
   const { authState } = useAuth();
-  const [currentLocation, setCurrentLocation] = useState('Bangkok');
+  const [currentLocation, setCurrentLocation] = useState('Hua Hin');
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
 
   // Available cities from original codebase
   const availableCities = [
+    { id: 'hua-hin', name: 'Hua Hin', slug: 'hua-hin' },
+    { id: 'cha-am', name: 'Cha-am', slug: 'cha-am' },
     { id: 'bangkok', name: 'Bangkok', slug: 'bangkok' },
     { id: 'pattaya', name: 'Pattaya', slug: 'pattaya' },
-    { id: 'hua-hin', name: 'Hua Hin', slug: 'hua-hin' },
     { id: 'phuket', name: 'Phuket', slug: 'phuket' },
     { id: 'chiang-mai', name: 'Chiang Mai', slug: 'chiang-mai' },
     { id: 'krabi', name: 'Krabi', slug: 'krabi' },
@@ -67,7 +70,7 @@ const MobileHomeScreen: React.FC = () => {
       }
     } catch (error) {
       console.error('Location detection failed:', error);
-      setCurrentLocation('Bangkok'); // Ultimate fallback
+      setCurrentLocation('Hua Hin'); // Ultimate fallback
       setIsDetectingLocation(false);
     }
   };
@@ -97,7 +100,7 @@ const MobileHomeScreen: React.FC = () => {
       }
     }
     
-    return 'Bangkok';
+    return 'Hua Hin';
   };
 
   const getLocationFromIP = async (): Promise<string> => {
@@ -132,10 +135,10 @@ const MobileHomeScreen: React.FC = () => {
         }
       }
       
-      return 'Bangkok';
+      return 'Hua Hin';
     } catch (error) {
       console.error('IP geolocation failed:', error);
-      return 'Bangkok';
+      return 'Hua Hin';
     }
   };
 
@@ -404,7 +407,7 @@ const AuthPages: React.FC = () => {
 // Main app content with auth integration
 const AppContent: React.FC = () => {
   return (
-    <div className="bg-gray-50 max-w-md mx-auto relative" style={{ height: '100vh', overflowY: 'auto' }}>
+    <div className="bg-gray-50 pb-20 max-w-md mx-auto relative hide-scrollbar" style={{ height: '100vh', overflowY: 'auto' }}>
       <Routes>
         <Route path="/" element={<MobileHomeScreen />}/>
         <Route path="/restaurants" element={<RestaurantsPage />}/>
@@ -412,6 +415,8 @@ const AppContent: React.FC = () => {
         <Route path="/events" element={<EventsPage />}/>
         <Route path="/news" element={<NewsPage />}/>
         <Route path="/savings-passport" element={<SavingsPassportPage />}/>
+        <Route path="/loyalty" element={<LoyaltyCardsPage />}/>
+        <Route path="/loyalty-card/:cardId" element={<LoyaltyCardPage cardId="cafe-aroma" businessName="Cafe Aroma" stampsCollected={3} stampsRequired={10} reward="Free Coffee" isCompleted={false} />}/>
         <Route path="/auth/login" element={<AuthPages />} />
         <Route path="/auth/signup" element={<AuthPages />} />
         <Route path="/profile" element={
