@@ -47,23 +47,33 @@ const RestaurantsPage: React.FC = () => {
       console.log('🏪 Loaded restaurants:', productionRestaurants.length);
       
       // Transform to our interface
-      const transformedRestaurants: Restaurant[] = productionRestaurants.map(restaurant => ({
-        id: restaurant.id,
-        name: restaurant.name,
-        address: restaurant.address,
-        rating: restaurant.rating || 4.0,
-        reviewCount: restaurant.reviewCount || 0,
-        cuisine: restaurant.cuisine || ['Thai'],
-        priceRange: restaurant.priceRange || 2,
-        heroImage: restaurant.heroImage || '',
-        photoGallery: restaurant.photoGallery || [],
-        signatureDishes: restaurant.signatureDishes || [],
-        isOpen: restaurant.status === 'active',
-        features: restaurant.features || [],
-        openingHours: restaurant.openingHours || '11:00 AM - 10:00 PM',
-        currentPromotions: restaurant.currentPromotions || [],
-        loyaltyProgram: restaurant.loyaltyProgram
-      }));
+      const transformedRestaurants: Restaurant[] = productionRestaurants.map(restaurant => {
+        // Debug logging for photo gallery transformation
+        if (restaurant.name === 'Gingerfire Restaurant') {
+          console.log('🔍 RestaurantsPage - Debugging Gingerfire transformation:');
+          console.log('- Production restaurant photoGallery:', restaurant.photoGallery);
+          console.log('- PhotoGallery type:', typeof restaurant.photoGallery);
+          console.log('- PhotoGallery length:', restaurant.photoGallery?.length || 0);
+        }
+        
+        return {
+          id: restaurant.id,
+          name: restaurant.name,
+          address: restaurant.address,
+          rating: restaurant.rating || 4.0,
+          reviewCount: restaurant.reviewCount || 0,
+          cuisine: restaurant.cuisine || ['Thai'],
+          priceRange: restaurant.priceRange || 2,
+          heroImage: restaurant.heroImage || '',
+          photoGallery: restaurant.photoGallery || [],
+          signatureDishes: restaurant.signatureDishes || [],
+          isOpen: restaurant.status === 'active',
+          features: restaurant.features || [],
+          openingHours: restaurant.openingHours || '11:00 AM - 10:00 PM',
+          currentPromotions: restaurant.currentPromotions || [],
+          loyaltyProgram: restaurant.loyaltyProgram
+        };
+      });
       
       setRestaurants(transformedRestaurants);
     } catch (error) {

@@ -77,32 +77,43 @@ export class RestaurantService {
         console.log('🏪 Found', restaurants.length, 'real restaurants from Supabase');
         
         // Transform Supabase data to our interface
-        const transformedRestaurants: ProductionRestaurant[] = restaurants.map(restaurant => ({
-          id: restaurant.id,
-          name: restaurant.name,
-          address: restaurant.address,
-          latitude: restaurant.latitude,
-          longitude: restaurant.longitude,
-          phone: restaurant.phone || '',
-          email: restaurant.email || '',
-          description: restaurant.description || '',
-          status: restaurant.partnership_status as 'active' | 'inactive',
-          cuisine: restaurant.cuisine_types_localplus || ['Thai'],
-          priceRange: 2, // Default price range
-          rating: null, // No mock rating
-          reviewCount: null, // No mock review count
-          heroImage: restaurant.photo_gallery && Array.isArray(restaurant.photo_gallery) && restaurant.photo_gallery.length > 0 
-            ? restaurant.photo_gallery[0] 
-            : null, // No fallback image - let the UI handle missing images
-          photoGallery: restaurant.photo_gallery && Array.isArray(restaurant.photo_gallery) && restaurant.photo_gallery.length > 0
-            ? restaurant.photo_gallery 
-            : [], // Full photo gallery array
-          signatureDishes: [], // No mock dishes
-          openingHours: null, // No mock hours
-          features: [], // No mock features
-          currentPromotions: [], // No mock promotions
-          loyaltyProgram: null // No mock loyalty program
-        }));
+        const transformedRestaurants: ProductionRestaurant[] = restaurants.map(restaurant => {
+          // Debug logging for photo gallery
+          if (restaurant.name === 'Gingerfire Restaurant') {
+            console.log('🔍 Debugging Gingerfire Restaurant:');
+            console.log('- Raw photo_gallery:', restaurant.photo_gallery);
+            console.log('- Photo gallery type:', typeof restaurant.photo_gallery);
+            console.log('- Is array:', Array.isArray(restaurant.photo_gallery));
+            console.log('- Length:', restaurant.photo_gallery?.length || 0);
+          }
+          
+          return {
+            id: restaurant.id,
+            name: restaurant.name,
+            address: restaurant.address,
+            latitude: restaurant.latitude,
+            longitude: restaurant.longitude,
+            phone: restaurant.phone || '',
+            email: restaurant.email || '',
+            description: restaurant.description || '',
+            status: restaurant.partnership_status as 'active' | 'inactive',
+            cuisine: restaurant.cuisine_types_localplus || ['Thai'],
+            priceRange: 2, // Default price range
+            rating: null, // No mock rating
+            reviewCount: null, // No mock review count
+            heroImage: restaurant.photo_gallery && Array.isArray(restaurant.photo_gallery) && restaurant.photo_gallery.length > 0 
+              ? restaurant.photo_gallery[0] 
+              : null, // No fallback image - let the UI handle missing images
+            photoGallery: restaurant.photo_gallery && Array.isArray(restaurant.photo_gallery) && restaurant.photo_gallery.length > 0
+              ? restaurant.photo_gallery 
+              : [], // Full photo gallery array
+            signatureDishes: [], // No mock dishes
+            openingHours: null, // No mock hours
+            features: [], // No mock features
+            currentPromotions: [], // No mock promotions
+            loyaltyProgram: null // No mock loyalty program
+          };
+        });
 
         return transformedRestaurants;
       }
