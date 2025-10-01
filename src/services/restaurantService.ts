@@ -77,17 +77,7 @@ export class RestaurantService {
         console.log('🏪 Found', restaurants.length, 'real restaurants from Supabase');
         
         // Transform Supabase data to our interface
-        const transformedRestaurants: ProductionRestaurant[] = restaurants.map(restaurant => {
-          // Debug logging for photo gallery
-          if (restaurant.name === 'Gingerfire Restaurant') {
-            console.log('🔍 Debugging Gingerfire Restaurant:');
-            console.log('- Raw photo_gallery:', restaurant.photo_gallery);
-            console.log('- Photo gallery type:', typeof restaurant.photo_gallery);
-            console.log('- Is array:', Array.isArray(restaurant.photo_gallery));
-            console.log('- Length:', restaurant.photo_gallery?.length || 0);
-          }
-          
-          return {
+        const transformedRestaurants: ProductionRestaurant[] = restaurants.map(restaurant => ({
             id: restaurant.id,
             name: restaurant.name,
             address: restaurant.address,
@@ -112,8 +102,7 @@ export class RestaurantService {
             features: [], // No mock features
             currentPromotions: [], // No mock promotions
             loyaltyProgram: null // No mock loyalty program
-          };
-        });
+          }));
 
         return transformedRestaurants;
       }

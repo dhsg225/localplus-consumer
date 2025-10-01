@@ -47,16 +47,7 @@ const RestaurantsPage: React.FC = () => {
       console.log('🏪 Loaded restaurants:', productionRestaurants.length);
       
       // Transform to our interface
-      const transformedRestaurants: Restaurant[] = productionRestaurants.map(restaurant => {
-        // Debug logging for photo gallery transformation
-        if (restaurant.name === 'Gingerfire Restaurant') {
-          console.log('🔍 RestaurantsPage - Debugging Gingerfire transformation:');
-          console.log('- Production restaurant photoGallery:', restaurant.photoGallery);
-          console.log('- PhotoGallery type:', typeof restaurant.photoGallery);
-          console.log('- PhotoGallery length:', restaurant.photoGallery?.length || 0);
-        }
-        
-        return {
+      const transformedRestaurants: Restaurant[] = productionRestaurants.map(restaurant => ({
           id: restaurant.id,
           name: restaurant.name,
           address: restaurant.address,
@@ -72,8 +63,7 @@ const RestaurantsPage: React.FC = () => {
           openingHours: restaurant.openingHours || '11:00 AM - 10:00 PM',
           currentPromotions: restaurant.currentPromotions || [],
           loyaltyProgram: restaurant.loyaltyProgram
-        };
-      });
+        }));
       
       setRestaurants(transformedRestaurants);
     } catch (error) {

@@ -11,16 +11,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, restaurantName })
 
   // Filter out null images
   const validImages = images.filter(img => img !== null) as string[];
-  
-  // Debug logging for image carousel
-  if (restaurantName === 'Gingerfire Restaurant') {
-    console.log('🔍 ImageCarousel - Debugging Gingerfire:');
-    console.log('- Received images:', images);
-    console.log('- Images type:', typeof images);
-    console.log('- Images length:', images?.length || 0);
-    console.log('- Valid images after filter:', validImages);
-    console.log('- Valid images length:', validImages.length);
-  }
 
   // Auto-advance carousel every 5 seconds
   useEffect(() => {
@@ -48,9 +38,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, restaurantName })
   };
 
   if (!validImages || validImages.length === 0) {
-    if (restaurantName === 'Gingerfire Restaurant') {
-      console.log('🔍 ImageCarousel - No valid images found for Gingerfire');
-    }
     return (
       <div className="relative h-48 bg-gray-200 flex items-center justify-center">
         <div className="text-gray-400 text-center">
@@ -61,12 +48,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, restaurantName })
     );
   }
 
-  if (restaurantName === 'Gingerfire Restaurant') {
-    console.log('🔍 ImageCarousel - Rendering images for Gingerfire:');
-    console.log('- Current image index:', currentImageIndex);
-    console.log('- Current image URL:', validImages[currentImageIndex]);
-  }
-
   return (
     <div className="relative h-48 bg-gray-200 overflow-hidden">
       {/* Main Image */}
@@ -74,17 +55,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, restaurantName })
         src={validImages[currentImageIndex]}
         alt={`${restaurantName} - Image ${currentImageIndex + 1}`}
         className="w-full h-full object-cover transition-opacity duration-300"
-        onLoad={() => {
-          if (restaurantName === 'Gingerfire Restaurant') {
-            console.log('🔍 ImageCarousel - Image loaded successfully for Gingerfire');
-          }
-        }}
-        onError={(e) => {
-          if (restaurantName === 'Gingerfire Restaurant') {
-            console.log('🔍 ImageCarousel - Image failed to load for Gingerfire:', e);
-            console.log('🔍 Failed image URL:', validImages[currentImageIndex]);
-          }
-        }}
       />
 
       {/* Photo Count Badge */}
