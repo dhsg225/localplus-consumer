@@ -56,6 +56,7 @@ const RestaurantsPage: React.FC = () => {
         cuisine: restaurant.cuisine || ['Thai'],
         priceRange: restaurant.priceRange || 2,
         heroImage: restaurant.heroImage || '',
+        photoGallery: restaurant.photoGallery || [],
         signatureDishes: restaurant.signatureDishes || [],
         isOpen: restaurant.status === 'active',
         features: restaurant.features || [],
